@@ -58,7 +58,7 @@ inline ONOFF::ONOFF(uint8_t pin, bool relayState, bool activeLow, bool debug)
 
 // Constructor from struct params (delegates)
 inline ONOFF::ONOFF(const Params_onoff& params)
-  : ONOFF(params.pin, params.startState, params.activeLow) {
+  : ONOFF(params.pin, params.startState, params.activeLow, params.debug) {
   initialized = true;
 }
 
