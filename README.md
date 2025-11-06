@@ -33,6 +33,7 @@ Once installed, you can include it in your sketch:
 ```
 
 
+## Configuration Struct
 The library uses a simple struct for configuration:
 
 ```
@@ -43,16 +44,47 @@ struct Params_onoff {
   bool debug;           // enable serial debug messages
 };
 ```
+You can initialize it using designated initializers (C++17+) or standard positional syntax (C++11) depending on your board.
 
-You can initialize it using designated initializers:
+## ⚙️ Board Compatibility Notes
+### For ESP32 / ESP8266 / Modern Boards
 
+These use a newer C++ standard (C++17 or later), so you can safely use designated initializers:
 ```
-Params_onoff params = {
-  .pin = 8,
+Params_onoff relayParams = {
+  .pin = 2,
   .startState = false,
-  .activeLow = true,
+  .activeLow = false,
   .debug = true
 };
+
+ONOFF relay(relayParams);
+```
+
+### For Arduino Nano / UNO / Mega (AVR Boards)
+
+Older AVR compilers only support C++11, which does not allow .pin = ... designated initializers.
+
+Instead, use manual assignment or positional initialization:
+#### 🟡 Option 1 – Manual assignment:
+```
+Params_onoff relayParams;
+ONOFF relay;
+
+void setup() {
+  relayParams.pin = 2;
+  relayParams.startState = false;
+  relayParams.activeLow = false;
+  relayParams.debug = true;
+
+  relay.init(relayParams);
+  relay.begin();
+}
+```
+
+#### 🟡 Option 2 – Positional initialization:
+```
+Params_onoff relayParams = {2, false, false, true};
 ```
 
 ## Usage Examples
