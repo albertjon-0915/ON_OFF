@@ -36,7 +36,7 @@ Once installed, you can include it in your sketch:
 ## Configuration Struct
 The library uses a simple struct for configuration:
 
-```
+```cpp
 struct Params_onoff {
   uint8_t pin;          // GPIO pin number
   bool startState;      // initial relay state
@@ -50,7 +50,7 @@ You can initialize it using designated initializers (C++17+) or standard positio
 ### For ESP32 / ESP8266 / Modern Boards
 
 These use a newer C++ standard (C++17 or later), so you can safely use designated initializers:
-```
+```cpp
 Params_onoff relayParams = {
   .pin = 2,
   .startState = false,
@@ -67,7 +67,7 @@ Older AVR compilers only support C++11, which does not allow .pin = ... designat
 
 Instead, use manual assignment or positional initialization:
 #### 🟡 Option 1 – Manual assignment:
-```
+```cpp
 Params_onoff relayParams;
 ONOFF relay;
 
@@ -83,14 +83,14 @@ void setup() {
 ```
 
 #### 🟡 Option 2 – Positional initialization:
-```
+```cpp
 Params_onoff relayParams = {2, false, false, true};
 ```
 
 ## Usage Examples
 ### Example 1 – Simple Direct Initialization
 
-```
+```cpp
 #include <ONOFF.h>
 
 ONOFF relay(25, false, true, true);  // pin, startState, activeLow, debug
@@ -110,7 +110,7 @@ void loop() {
 
 ### Example 2 – Initialization with Struct
 
-```
+```cpp
 #include <ONOFF.h>
 
 Params_onoff relayParams = {
@@ -134,7 +134,7 @@ void loop() {
 
 ### Example 3 – Deferred Initialization
  - You can create the object first and initialize it later:
-```
+```cpp
 #include <ONOFF.h>
 
 ONOFF relay;
@@ -150,10 +150,33 @@ void loop() {
 }
 ```
 
+### Example 4 – Checking Relay Status
+ - The library includes a status() method that returns the current logical state of the relay:
+```cpp
+#include <ONOFF.h>
+
+ONOFF relay(2, false, false, true);
+
+void setup() {
+  relay.begin();
+  relay.on();
+
+  // statusType s = relay.status();
+  // if (s == ON) code here..
+  // if (s == OFF) code here..
+
+  if (relay.status() == ON) Serial.println("Relay is ON");
+  if (relay.status() == OFF) Serial.println("Relay is OFF");
+}
+
+```
+The method automatically considers active-low logic, so the reported status always matches the logical state of your device (not just the pin voltage).
+
+
 ## Debug Messages
 ### If debug is set to true, the library outputs messages like:
 
-```
+```cpp
 ONOFF library mounted
 Turning ON
 Turning OFF
@@ -162,19 +185,36 @@ Toggle state: ON
 
 ### You can change the baud rate with(optional):
 
-```
+```cpp
 relay.begin(115200);
 ```
 
 
 ## Enum Reference
+### statusType
 
-```
-enum MessageType {
+Represents the logical state of the relay:
+```cpp
+enum statusType {
   ON,
-  OFF,
-  TOGGLE,
-  PIN
+  OFF
+};
+```
+Used by:
+```cpp
+statusType ONOFF::status();
+```
+Returns the current effective relay state, considering active-low behavior.
+
+### MessageType
+
+Used internally for handling debug message types:
+```cpp
+enum MessageType {
+  MSG_ON,
+  MSG_OFF,
+  MSG_TOGGLE,
+  MSG_PIN
 };
 ```
 Used internally by the library for debug message control.

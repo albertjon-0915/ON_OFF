@@ -11,11 +11,16 @@ struct Params_onoff {
   bool debug = false;
 };
 
-enum MessageType {
+enum statusType {
   ON,
-  OFF,
-  TOGGLE,
-  PIN
+  OFF
+};
+
+enum MessageType {
+  MSG_ON,
+  MSG_OFF,
+  MSG_TOGGLE,
+  MSG_PIN
 };
 
 class ONOFF {
@@ -31,6 +36,7 @@ public:
   void off(bool canTurnOff = true);
   void toggle(bool canToggle = true);
   void begin(int baud = 9600);
+  statusType status();
 
 private:
   uint8_t relayPin;
@@ -53,7 +59,7 @@ inline ONOFF::ONOFF(uint8_t pin, bool relayState, bool activeLow, bool debug)
   pinMode(relayPin, OUTPUT);
   digitalWrite(relayPin, (relayState ^ activeLow) ? HIGH : LOW);
 
-  debugMessage(PIN);
+  debugMessage(MSG_PIN);
 }
 
 // Constructor from struct params (delegates)
@@ -91,7 +97,7 @@ inline void ONOFF::begin(int baud) {
 }
 
 inline void ONOFF::on(bool canTurnOn) {
-  debugMessage(ON);
+  debugMessage(MSG_ON);
 
   if (canTurnOn && !relayState) {
     digitalWrite(relayPin, activeLow ? LOW : HIGH);
@@ -100,7 +106,7 @@ inline void ONOFF::on(bool canTurnOn) {
 }
 
 inline void ONOFF::off(bool canTurnOff) {
-  debugMessage(OFF);
+  debugMessage(MSG_OFF);
 
   if (canTurnOff && relayState) {
     digitalWrite(relayPin, activeLow ? HIGH : LOW);
@@ -111,7 +117,7 @@ inline void ONOFF::off(bool canTurnOff) {
 inline void ONOFF::toggle(bool canToggle) {
   if (!canToggle) return;
 
-  debugMessage(TOGGLE);
+  debugMessage(MSG_TOGGLE);
 
   relayState = !relayState;
   // XOR conditions for inverting toggle when activeLow
@@ -119,21 +125,27 @@ inline void ONOFF::toggle(bool canToggle) {
   digitalWrite(relayPin, (relayState ^ activeLow) ? HIGH : LOW);
 }
 
+inline statusType ONOFF::status() {
+  bool currentState = digitalRead(relayPin);
+  bool effectiveState = activeLow ? !currentState : currentState;
+  return effectiveState ? ON : OFF;
+}
+
 inline void ONOFF::debugMessage(MessageType message) {
   if (!debug) return;
 
   switch (message) {
-    case ON:
+    case MSG_ON:
       Serial.println("Turning ON");
       break;
-    case OFF:
+    case MSG_OFF:
       Serial.println("Turning OFF");
       break;
-    case TOGGLE:
+    case MSG_TOGGLE:
       Serial.print("Toggle state: ");
       Serial.println((relayState ^ activeLow) ? "ON" : "OFF");
       break;
-    case PIN:
+    case MSG_PIN:
       Serial.println(digitalRead(relayPin));
       break;
   }
