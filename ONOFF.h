@@ -11,6 +11,11 @@ struct Params_onoff {
   bool debug = false;
 };
 
+enum statusType {
+  ON,
+  OFF
+}
+
 enum MessageType {
   ON,
   OFF,
@@ -117,6 +122,12 @@ inline void ONOFF::toggle(bool canToggle) {
   // XOR conditions for inverting toggle when activeLow
   // digitalWrite(relayPin, (relayState && !activeLow) ? HIGH : LOW) ---> almost same as this
   digitalWrite(relayPin, (relayState ^ activeLow) ? HIGH : LOW);
+}
+
+inline statusType ONOFF::status() {
+  bool currentState = digitalRead(relayPin);
+  bool effectiveState = activeLow ? !currentState : currentState;
+  return effectiveState ? ON : OFF;
 }
 
 inline void ONOFF::debugMessage(MessageType message) {
