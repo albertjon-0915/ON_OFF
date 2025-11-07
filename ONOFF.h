@@ -97,7 +97,7 @@ inline void ONOFF::begin(int baud) {
 }
 
 inline void ONOFF::on(bool canTurnOn) {
-  debugMessage(MSG_ON);
+  debugMessage(activeLow ? MSG_OFF : MSG_ON);
 
   if (canTurnOn && !relayState) {
     digitalWrite(relayPin, activeLow ? LOW : HIGH);
@@ -106,7 +106,7 @@ inline void ONOFF::on(bool canTurnOn) {
 }
 
 inline void ONOFF::off(bool canTurnOff) {
-  debugMessage(MSG_OFF);
+  debugMessage(activeLow ? MSG_ON : MSG_OFF);
 
   if (canTurnOff && relayState) {
     digitalWrite(relayPin, activeLow ? HIGH : LOW);
@@ -136,7 +136,7 @@ inline void ONOFF::debugMessage(MessageType message) {
   char buf[32];
   sprintf(buf, "PIN NO: %d --->  ", relayPin);
   Serial.print(buf);
-  
+
 
   switch (message) {
     case MSG_ON:
@@ -147,7 +147,7 @@ inline void ONOFF::debugMessage(MessageType message) {
       break;
     case MSG_TOGGLE:
       Serial.print("Toggle state: ");
-      Serial.println((relayState ^ activeLow) ? "ON" : "OFF");
+      Serial.println((relayState ^ activeLow) ? "OFF" : "ON");
       break;
     case MSG_PIN:
       Serial.println(digitalRead(relayPin));
