@@ -14,7 +14,7 @@ struct Params_onoff {
 enum statusType {
   ON,
   OFF
-}
+};
 
 enum MessageType {
   MSG_ON,
