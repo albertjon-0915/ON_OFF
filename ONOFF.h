@@ -133,6 +133,10 @@ inline statusType ONOFF::status() {
 
 inline void ONOFF::debugMessage(MessageType message) {
   if (!debug) return;
+  char buf[32];
+  sprintf(buf, "PIN NO: %d --->  ", relayPin);
+  Serial.print(buf);
+  
 
   switch (message) {
     case MSG_ON:
