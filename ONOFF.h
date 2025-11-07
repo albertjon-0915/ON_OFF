@@ -101,7 +101,7 @@ inline void ONOFF::on(bool canTurnOn) {
 
   if (canTurnOn && !relayState) {
     digitalWrite(relayPin, activeLow ? LOW : HIGH);
-    relayState = true;
+    relayState = activeLow ? false : true;
   }
 }
 
@@ -110,7 +110,7 @@ inline void ONOFF::off(bool canTurnOff) {
 
   if (canTurnOff && relayState) {
     digitalWrite(relayPin, activeLow ? HIGH : LOW);
-    relayState = false;
+    relayState = activeLow ? true : false;
   }
 }
 
@@ -126,9 +126,7 @@ inline void ONOFF::toggle(bool canToggle) {
 }
 
 inline statusType ONOFF::status() {
-  bool currentState = digitalRead(relayPin);
-  bool effectiveState = activeLow ? !currentState : currentState;
-  return effectiveState ? ON : OFF;
+  return relayState ? ON : OFF;
 }
 
 inline void ONOFF::debugMessage(MessageType message) {
