@@ -97,18 +97,16 @@ inline void ONOFF::begin(int baud) {
 }
 
 inline void ONOFF::on(bool canTurnOn) {
-  debugMessage(activeLow ? MSG_OFF : MSG_ON);
-
   if (canTurnOn && !relayState) {
+    debugMessage(activeLow ? MSG_OFF : MSG_ON);
     digitalWrite(relayPin, activeLow ? LOW : HIGH);
     relayState = activeLow ? false : true;
   }
 }
 
 inline void ONOFF::off(bool canTurnOff) {
-  debugMessage(activeLow ? MSG_ON : MSG_OFF);
-
   if (canTurnOff && relayState) {
+    debugMessage(activeLow ? MSG_ON : MSG_OFF);
     digitalWrite(relayPin, activeLow ? HIGH : LOW);
     relayState = activeLow ? true : false;
   }
